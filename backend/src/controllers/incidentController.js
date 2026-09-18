@@ -16,6 +16,7 @@ export const createIncident = async (req, res, next) => {
       discoveryTime,
       affectedSystem,
       possibleDataExposed,
+      severity,
       currentStatus,
       actionsAlreadyTaken
     } = req.body;
@@ -29,9 +30,10 @@ export const createIncident = async (req, res, next) => {
         discovery_time,
         affected_system,
         possible_data_exposed,
+        severity,
         current_status,
         actions_already_taken
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
       RETURNING *`,
       [
         req.user.id,
@@ -41,6 +43,7 @@ export const createIncident = async (req, res, next) => {
         discoveryTime,
         affectedSystem,
         JSON.stringify(possibleDataExposed || []),
+        severity || 'medium',
         currentStatus || 'suspected',
         actionsAlreadyTaken || ''
       ]
@@ -68,6 +71,7 @@ export const createIncident = async (req, res, next) => {
         incident: {
           id: incident.id,
           title: incident.title,
+          severity: incident.severity,
           status: incident.current_status,
           created_at: incident.created_at
         }
@@ -86,7 +90,7 @@ export const createIncident = async (req, res, next) => {
 export const getIncidents = async (req, res, next) => {
   try {
     const result = await query(
-      `SELECT id, title, incident_type, affected_system, current_status, discovery_time, created_at, updated_at
+      `SELECT id, title, incident_type, severity, affected_system, current_status, discovery_time, created_at, updated_at
        FROM incidents
        WHERE user_id = $1
        ORDER BY created_at DESC`,
@@ -140,6 +144,7 @@ export const updateIncident = async (req, res, next) => {
       discoveryTime,
       affectedSystem,
       possibleDataExposed,
+      severity,
       currentStatus,
       actionsAlreadyTaken
     } = req.body;
@@ -150,6 +155,7 @@ export const updateIncident = async (req, res, next) => {
     const updatedDiscovery = discoveryTime !== undefined ? discoveryTime : current.discovery_time;
     const updatedSystem = affectedSystem !== undefined ? affectedSystem : current.affected_system;
     const updatedDataExposed = possibleDataExposed !== undefined ? JSON.stringify(possibleDataExposed) : current.possible_data_exposed;
+    const updatedSeverity = severity !== undefined ? severity : (current.severity || 'medium');
     const updatedStatus = currentStatus !== undefined ? currentStatus : current.current_status;
     const updatedActions = actionsAlreadyTaken !== undefined ? actionsAlreadyTaken : current.actions_already_taken;
 
@@ -161,10 +167,11 @@ export const updateIncident = async (req, res, next) => {
            discovery_time = $4,
            affected_system = $5,
            possible_data_exposed = $6,
-           current_status = $7,
-           actions_already_taken = $8,
+           severity = $7,
+           current_status = $8,
+           actions_already_taken = $9,
            updated_at = CURRENT_TIMESTAMP
-       WHERE id = $9 AND user_id = $10
+       WHERE id = $10 AND user_id = $11
        RETURNING *`,
       [
         updatedTitle,
@@ -173,6 +180,7 @@ export const updateIncident = async (req, res, next) => {
         updatedDiscovery,
         updatedSystem,
         updatedDataExposed,
+        updatedSeverity,
         updatedStatus,
         updatedActions,
         id,

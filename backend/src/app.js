@@ -14,13 +14,30 @@ import notificationRoutes from './routes/notificationRoutes.js';
 import notesRoutes, { noteRouter } from './routes/notesRoutes.js';
 import evidenceRoutes, { singleEvidenceRouter } from './routes/evidenceRoutes.js';
 import reportRoutes from './routes/reportRoutes.js';
+import analyticsRoutes from './routes/analyticsRoutes.js';
 
 const app = express();
 
 // Security Middlewares
 app.use(helmet());
+
+const allowedOrigins = [
+  env.CLIENT_URL,
+  'http://localhost:5173',
+  'http://localhost:8443',
+  'http://localhost:3000',
+  'http://127.0.0.1:5173',
+  'http://127.0.0.1:8443'
+].filter(Boolean);
+
 app.use(cors({
-  origin: env.CLIENT_URL || '*',
+  origin: (origin, callback) => {
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin) || env.NODE_ENV === 'development') {
+      return callback(null, true);
+    }
+    return callback(new Error('CORS blocked origin: ' + origin));
+  },
   credentials: true
 }));
 
@@ -58,6 +75,7 @@ app.get('/api/health', (req, res) => {
 // Route Mounts
 app.use('/api/auth', authRoutes);
 app.use('/api/incidents', incidentRoutes);
+app.use('/api/analytics', analyticsRoutes);
 
 // Nested Sub-Resource Routes
 app.use('/api/incidents/:id/checklist', checklistRoutes);

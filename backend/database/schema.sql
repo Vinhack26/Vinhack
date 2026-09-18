@@ -30,6 +30,7 @@ CREATE TABLE incidents (
   description TEXT NOT NULL,
   discovery_time TIMESTAMPTZ NOT NULL,
   affected_system VARCHAR(255) NOT NULL,
+  severity VARCHAR(20) NOT NULL DEFAULT 'medium' CHECK (severity IN ('critical', 'high', 'medium', 'low')),
   current_status VARCHAR(50) NOT NULL DEFAULT 'suspected' CHECK (current_status IN ('suspected', 'investigating', 'contained', 'resolved')),
   possible_data_exposed JSONB NOT NULL DEFAULT '[]'::jsonb,
   actions_already_taken TEXT DEFAULT '',
@@ -39,6 +40,7 @@ CREATE TABLE incidents (
 
 CREATE INDEX idx_incidents_user_id ON incidents(user_id);
 CREATE INDEX idx_incidents_status ON incidents(current_status);
+CREATE INDEX idx_incidents_severity ON incidents(severity);
 
 -- 3. AI_REPORTS TABLE
 CREATE TABLE ai_reports (

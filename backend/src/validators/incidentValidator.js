@@ -9,6 +9,7 @@ export const createIncidentSchema = z.object({
   }),
   affectedSystem: z.string().trim().min(2, 'Affected system is required'),
   possibleDataExposed: z.array(z.string()).default([]),
+  severity: z.enum(['critical', 'high', 'medium', 'low']).default('medium'),
   currentStatus: z.enum(['suspected', 'investigating', 'contained', 'resolved']).default('suspected'),
   actionsAlreadyTaken: z.string().optional().default('')
 });
@@ -22,6 +23,7 @@ export const updateIncidentSchema = z.object({
   }).optional(),
   affectedSystem: z.string().trim().min(2).optional(),
   possibleDataExposed: z.array(z.string()).optional(),
+  severity: z.enum(['critical', 'high', 'medium', 'low']).optional(),
   currentStatus: z.enum(['suspected', 'investigating', 'contained', 'resolved']).optional(),
   actionsAlreadyTaken: z.string().optional()
 });
