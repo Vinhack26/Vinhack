@@ -1,0 +1,205 @@
+{
+  "info": {
+    "_postman_id": "breachbuddy-api-v1",
+    "name": "BreachBuddy Backend API Collection",
+    "description": "Complete Postman collection for BreachBuddy Express & PostgreSQL Backend",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000/api",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "incidentId",
+      "value": "1",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register User",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Security Admin\",\n  \"email\": \"demo@breachbuddy.org\",\n  \"password\": \"Password123!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "register"]
+            }
+          }
+        },
+        {
+          "name": "Login User",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"demo@breachbuddy.org\",\n  \"password\": \"Password123!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Get User Profile",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "me"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Incidents",
+      "item": [
+        {
+          "name": "Create Incident",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"College Student Database Exposure\",\n  \"incidentType\": \"accidental_data_exposure\",\n  \"description\": \"A college database may have been publicly accessible.\",\n  \"discoveryTime\": \"2026-09-18T10:00:00Z\",\n  \"affectedSystem\": \"Student Database\",\n  \"possibleDataExposed\": [\n    \"names\",\n    \"register_numbers\",\n    \"email_addresses\",\n    \"phone_numbers\"\n  ],\n  \"currentStatus\": \"suspected\",\n  \"actionsAlreadyTaken\": \"Isolated network access\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/incidents",
+              "host": ["{{baseUrl}}"],
+              "path": ["incidents"]
+            }
+          }
+        },
+        {
+          "name": "Get All Incidents",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/incidents",
+              "host": ["{{baseUrl}}"],
+              "path": ["incidents"]
+            }
+          }
+        },
+        {
+          "name": "Get Incident by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/incidents/{{incidentId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["incidents", "{{incidentId}}"]
+            }
+          }
+        },
+        {
+          "name": "Run AI Incident Analysis",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/incidents/{{incidentId}}/analyze",
+              "host": ["{{baseUrl}}"],
+              "path": ["incidents", "{{incidentId}}", "analyze"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Checklist",
+      "item": [
+        {
+          "name": "Get Checklist Tasks",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/incidents/{{incidentId}}/checklist",
+              "host": ["{{baseUrl}}"],
+              "path": ["incidents", "{{incidentId}}", "checklist"]
+            }
+          }
+        },
+        {
+          "name": "Create Task",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"task\": \"Preserve firewall logs\",\n  \"category\": \"investigation\",\n  \"priority\": \"high\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/incidents/{{incidentId}}/checklist",
+              "host": ["{{baseUrl}}"],
+              "path": ["incidents", "{{incidentId}}", "checklist"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Report Export",
+      "item": [
+        {
+          "name": "Download PDF Report",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/incidents/{{incidentId}}/report/pdf",
+              "host": ["{{baseUrl}}"],
+              "path": ["incidents", "{{incidentId}}", "report", "pdf"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
